@@ -1,0 +1,2932 @@
+openapi: 3.0.3
+info:
+  title: ChuanYi Backend API (Draft V1)
+  version: 1.0.0-draft
+  description: |
+    Draft API contract for ChuanYi app.
+    Scope includes DIY flow, order flow, and added goods/cart flow.
+servers:
+  - url: http://localhost:8080
+    description: Local development
+tags:
+  - name: Auth
+  - name: Component
+  - name: Design
+  - name: Snapshot
+  - name: Address
+  - name: Order
+  - name: Payment
+  - name: Content
+  - name: Logistics
+  - name: Goods
+  - name: Cart
+  - name: Admin
+security:
+  - bearerAuth: []
+paths:
+  /api/auth/login:
+    post:
+      tags: [Auth]
+      summary: Login or guest login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseLoginData'
+
+  /api/auth/me:
+    get:
+      tags: [Auth]
+      summary: Get current user profile
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseMeData'
+
+  /api/auth/logout:
+    post:
+      tags: [Auth]
+      summary: Logout current token
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseBoolean'
+
+  /api/sku/categories:
+    get:
+      tags: [Component]
+      summary: Get component categories
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseSkuCategoryList'
+
+  /api/sku/list:
+    get:
+      tags: [Component]
+      summary: Get component SKU list
+      parameters:
+        - in: query
+          name: categoryId
+          schema:
+            type: integer
+            format: int64
+        - in: query
+          name: keyword
+          schema:
+            type: string
+        - in: query
+          name: pageNo
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseComponentSkuPage'
+
+  /api/design/draft/save:
+    post:
+      tags: [Design]
+      summary: Save design draft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DesignDraftSaveRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDesignDraftSaveData'
+
+  /api/design/draft/list:
+    get:
+      tags: [Design]
+      summary: List design drafts
+      parameters:
+        - in: query
+          name: pageNo
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDesignDraftPage'
+
+  /api/design/draft/{id}:
+    get:
+      tags: [Design]
+      summary: Get draft detail
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDesignDraftDetail'
+    delete:
+      tags: [Design]
+      summary: Delete draft
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseBoolean'
+
+  /api/design/snapshot/create-from-draft:
+    post:
+      tags: [Snapshot]
+      summary: Create snapshot from draft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SnapshotCreateRequest'
+      responses:
+        '200':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseSnapshotCreateData'
+
+  /api/design/snapshot/{snapshotNo}:
+    get:
+      tags: [Snapshot]
+      summary: Get snapshot detail
+      parameters:
+        - in: path
+          name: snapshotNo
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseSnapshotDetail'
+
+  /api/address/list:
+    get:
+      tags: [Address]
+      summary: Get address list
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseAddressList'
+
+  /api/address/save:
+    post:
+      tags: [Address]
+      summary: Create or update address
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressSaveRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseAddressSaveData'
+
+  /api/address/{id}:
+    delete:
+      tags: [Address]
+      summary: Delete address
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseBoolean'
+
+  /api/order/create:
+    post:
+      tags: [Order]
+      summary: Create order from DIY snapshot
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreateRequest'
+      responses:
+        '200':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseOrderCreateData'
+
+  /api/order/create-from-cart:
+    post:
+      tags: [Order]
+      summary: Create order from cart items
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreateFromCartRequest'
+      responses:
+        '200':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseOrderCreateData'
+
+  /api/order/create-direct-goods:
+    post:
+      tags: [Order]
+      summary: Create order directly from goods sku
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreateDirectGoodsRequest'
+      responses:
+        '200':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseOrderCreateData'
+
+  /api/payment/mock/pay:
+    post:
+      tags: [Payment]
+      summary: Mock payment submit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MockPayRequest'
+      responses:
+        '200':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseMockPayData'
+
+  /api/payment/mock/callback:
+    post:
+      tags: [Payment]
+      summary: Mock payment callback
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MockPayCallbackRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseBoolean'
+
+  /api/order/list:
+    get:
+      tags: [Order]
+      summary: Get order list
+      parameters:
+        - in: query
+          name: status
+          schema:
+            $ref: '#/components/schemas/OrderStatus'
+        - in: query
+          name: pageNo
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseOrderPage'
+
+  /api/order/{orderNo}:
+    get:
+      tags: [Order]
+      summary: Get order detail
+      parameters:
+        - in: path
+          name: orderNo
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseOrderDetail'
+
+  /api/order/{orderNo}/cancel:
+    post:
+      tags: [Order]
+      summary: Cancel order
+      parameters:
+        - in: path
+          name: orderNo
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderActionRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseOrderActionData'
+
+  /api/order/{orderNo}/ship:
+    post:
+      tags: [Order]
+      summary: Ship order
+      parameters:
+        - in: path
+          name: orderNo
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderShipRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseOrderShipData'
+
+  /api/order/{orderNo}/confirm-receipt:
+    post:
+      tags: [Order]
+      summary: Confirm receipt
+      parameters:
+        - in: path
+          name: orderNo
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderActionRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseOrderActionData'
+
+  /api/content/banner/list:
+    get:
+      tags: [Content]
+      summary: Get banner list
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseBannerList'
+
+  /api/gallery/list:
+    get:
+      tags: [Content]
+      summary: Get design gallery list
+      parameters:
+        - in: query
+          name: pageNo
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseGalleryPage'
+
+  /api/gallery/{id}:
+    get:
+      tags: [Content]
+      summary: Get design gallery detail
+      parameters:
+        - $ref: '#/components/parameters/PathId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseGalleryDetail'
+
+  /api/logistics/track:
+    get:
+      tags: [Logistics]
+      summary: Get logistics track
+      parameters:
+        - in: query
+          name: carrierCode
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: trackingNo
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseLogisticsTrack'
+
+  /api/goods/categories:
+    get:
+      tags: [Goods]
+      summary: Get goods categories
+      parameters:
+        - in: query
+          name: withCount
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseGoodsCategoryList'
+
+  /api/goods/list:
+    get:
+      tags: [Goods]
+      summary: Get goods SPU list
+      parameters:
+        - in: query
+          name: categoryId
+          schema:
+            type: integer
+            format: int64
+        - in: query
+          name: keyword
+          schema:
+            type: string
+        - in: query
+          name: sortType
+          schema:
+            type: string
+            enum: [DEFAULT, PRICE_ASC, PRICE_DESC, NEWEST]
+        - in: query
+          name: pageNo
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseGoodsSpuPage'
+
+  /api/goods/{spuId}:
+    get:
+      tags: [Goods]
+      summary: Get goods detail
+      parameters:
+        - in: path
+          name: spuId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseGoodsDetail'
+
+  /api/cart:
+    get:
+      tags: [Cart]
+      summary: Get cart detail
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseCartData'
+
+  /api/cart/items:
+    post:
+      tags: [Cart]
+      summary: Add item to cart
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartAddRequest'
+      responses:
+        '200':
+          description: Added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseCartSummary'
+
+  /api/cart/items/{cartItemId}:
+    put:
+      tags: [Cart]
+      summary: Update cart item qty
+      parameters:
+        - in: path
+          name: cartItemId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartUpdateQtyRequest'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseCartSummary'
+    delete:
+      tags: [Cart]
+      summary: Delete cart item
+      parameters:
+        - in: path
+          name: cartItemId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseCartSummary'
+
+  /api/cart/items/{cartItemId}/select:
+    put:
+      tags: [Cart]
+      summary: Select or unselect one cart item
+      parameters:
+        - in: path
+          name: cartItemId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartSelectRequest'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseCartSummary'
+
+  /api/cart/items/select-all:
+    post:
+      tags: [Cart]
+      summary: Select or unselect all cart items
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartSelectAllRequest'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseCartSummary'
+
+  /api/cart/settlement/preview:
+    post:
+      tags: [Cart]
+      summary: Preview settlement and validation result
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SettlementPreviewRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseSettlementPreviewData'
+
+  /api/admin/auth/login:
+    post:
+      tags: [Admin]
+      summary: Admin login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/auth/me:
+    get:
+      tags: [Admin]
+      summary: Get current admin profile
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/auth/logout:
+    post:
+      tags: [Admin]
+      summary: Admin logout
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/dashboard/overview:
+    get:
+      tags: [Admin]
+      summary: Admin dashboard overview metrics
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/order/list:
+    get:
+      tags: [Admin]
+      summary: List orders for admin
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+        - in: query
+          name: keyword
+          schema:
+            type: string
+        - in: query
+          name: pageNo
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/order/{orderNo}:
+    get:
+      tags: [Admin]
+      summary: Get admin order detail
+      parameters:
+        - in: path
+          name: orderNo
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/order/{orderNo}/cancel:
+    post:
+      tags: [Admin]
+      summary: Cancel order by admin
+      parameters:
+        - in: path
+          name: orderNo
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                remark:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/order/{orderNo}/ship:
+    post:
+      tags: [Admin]
+      summary: Ship order by admin
+      parameters:
+        - in: path
+          name: orderNo
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                carrierCode:
+                  type: string
+                trackingNo:
+                  type: string
+                remark:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/order/{orderNo}/complete:
+    post:
+      tags: [Admin]
+      summary: Mark order completed by admin
+      parameters:
+        - in: path
+          name: orderNo
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                remark:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/goods/list:
+    get:
+      tags: [Admin]
+      summary: List goods for admin
+      parameters:
+        - in: query
+          name: categoryId
+          schema:
+            type: integer
+            format: int64
+        - in: query
+          name: keyword
+          schema:
+            type: string
+        - in: query
+          name: salesStatus
+          schema:
+            type: string
+        - in: query
+          name: pageNo
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/goods/{spuId}:
+    get:
+      tags: [Admin]
+      summary: Get goods detail for admin edit
+      parameters:
+        - in: path
+          name: spuId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/goods/{spuId}/status:
+    post:
+      tags: [Admin]
+      summary: Update goods sales status
+      parameters:
+        - in: path
+          name: spuId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [salesStatus]
+              properties:
+                salesStatus:
+                  type: string
+                  enum: [ON_SALE, OFF_SALE]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/goods/{spuId}/save:
+    post:
+      tags: [Admin]
+      summary: Save goods basic fields
+      parameters:
+        - in: path
+          name: spuId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                subtitle:
+                  type: string
+                categoryId:
+                  type: integer
+                  format: int64
+                coverImageUrl:
+                  type: string
+                sortNo:
+                  type: integer
+                minPrice:
+                  type: number
+                maxPrice:
+                  type: number
+                stockStatus:
+                  type: string
+                salesStatus:
+                  type: string
+                tags:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/goods/{spuId}/sku/create:
+    post:
+      tags: [Admin]
+      summary: Create SKU under goods SPU
+      parameters:
+        - in: path
+          name: spuId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [specText, price]
+              properties:
+                specText:
+                  type: string
+                skuImageUrl:
+                  type: string
+                price:
+                  type: number
+                originPrice:
+                  type: number
+                stockQty:
+                  type: integer
+                salesStatus:
+                  type: string
+                  enum: [ON_SALE, OFF_SALE]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/goods/sku/{skuId}/save:
+    post:
+      tags: [Admin]
+      summary: Save SKU fields
+      parameters:
+        - in: path
+          name: skuId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                specText:
+                  type: string
+                skuImageUrl:
+                  type: string
+                price:
+                  type: number
+                originPrice:
+                  type: number
+                stockQty:
+                  type: integer
+                salesStatus:
+                  type: string
+                  enum: [ON_SALE, OFF_SALE]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/goods/sku/{skuId}/status:
+    post:
+      tags: [Admin]
+      summary: Update SKU sales status
+      parameters:
+        - in: path
+          name: skuId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [salesStatus]
+              properties:
+                salesStatus:
+                  type: string
+                  enum: [ON_SALE, OFF_SALE]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/goods/sku/{skuId}:
+    delete:
+      tags: [Admin]
+      summary: Delete SKU
+      parameters:
+        - in: path
+          name: skuId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/component/categories:
+    get:
+      tags: [Admin]
+      summary: List component categories
+      parameters:
+        - in: query
+          name: withCount
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/component/category/save:
+    post:
+      tags: [Admin]
+      summary: Save component category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                id:
+                  type: integer
+                  format: int64
+                parentId:
+                  type: integer
+                  format: int64
+                categoryType:
+                  type: string
+                  enum: [BEAD, SPACER, PENDANT, OTHER]
+                name:
+                  type: string
+                sortNo:
+                  type: integer
+                status:
+                  type: string
+                  enum: [ENABLED, DISABLED]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/component/category/{id}/status:
+    post:
+      tags: [Admin]
+      summary: Update component category status
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [ENABLED, DISABLED]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/component/category/{id}:
+    delete:
+      tags: [Admin]
+      summary: Delete component category
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/component/sku/list:
+    get:
+      tags: [Admin]
+      summary: List component sku
+      parameters:
+        - in: query
+          name: categoryId
+          schema:
+            type: integer
+            format: int64
+        - in: query
+          name: keyword
+          schema:
+            type: string
+        - in: query
+          name: salesStatus
+          schema:
+            type: string
+            enum: [ON_SALE, OFF_SALE]
+        - in: query
+          name: pageNo
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/component/sku/create:
+    post:
+      tags: [Admin]
+      summary: Create component sku
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [categoryId, name, price]
+              properties:
+                skuCode:
+                  type: string
+                categoryId:
+                  type: integer
+                  format: int64
+                name:
+                  type: string
+                specText:
+                  type: string
+                beadDiameterMm:
+                  type: number
+                price:
+                  type: number
+                stockQty:
+                  type: integer
+                stockWarnQty:
+                  type: integer
+                imageUrl:
+                  type: string
+                salesStatus:
+                  type: string
+                  enum: [ON_SALE, OFF_SALE]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/component/sku/{skuId}/save:
+    post:
+      tags: [Admin]
+      summary: Save component sku
+      parameters:
+        - in: path
+          name: skuId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                skuCode:
+                  type: string
+                categoryId:
+                  type: integer
+                  format: int64
+                name:
+                  type: string
+                specText:
+                  type: string
+                beadDiameterMm:
+                  type: number
+                price:
+                  type: number
+                stockQty:
+                  type: integer
+                stockWarnQty:
+                  type: integer
+                imageUrl:
+                  type: string
+                salesStatus:
+                  type: string
+                  enum: [ON_SALE, OFF_SALE]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/component/sku/{skuId}/status:
+    post:
+      tags: [Admin]
+      summary: Update component sku status
+      parameters:
+        - in: path
+          name: skuId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [salesStatus]
+              properties:
+                salesStatus:
+                  type: string
+                  enum: [ON_SALE, OFF_SALE]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/component/sku/batch-status:
+    post:
+      tags: [Admin]
+      summary: Batch update component sku status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [skuIds, salesStatus]
+              properties:
+                skuIds:
+                  type: array
+                  items:
+                    type: integer
+                    format: int64
+                salesStatus:
+                  type: string
+                  enum: [ON_SALE, OFF_SALE]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/component/sku/{skuId}:
+    delete:
+      tags: [Admin]
+      summary: Delete component sku
+      parameters:
+        - in: path
+          name: skuId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/content/banners:
+    get:
+      tags: [Admin]
+      summary: List banner contents
+      parameters:
+        - in: query
+          name: keyword
+          schema:
+            type: string
+        - in: query
+          name: status
+          schema:
+            type: string
+        - in: query
+          name: pageNo
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/content/banners/{id}/status:
+    post:
+      tags: [Admin]
+      summary: Update banner status
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [ENABLED, DISABLED]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/content/banners/save:
+    post:
+      tags: [Admin]
+      summary: Create or update banner
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                id:
+                  type: integer
+                  format: int64
+                title:
+                  type: string
+                imageUrl:
+                  type: string
+                jumpType:
+                  type: string
+                jumpValue:
+                  type: string
+                sortNo:
+                  type: integer
+                status:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/content/gallery:
+    get:
+      tags: [Admin]
+      summary: List gallery works
+      parameters:
+        - in: query
+          name: keyword
+          schema:
+            type: string
+        - in: query
+          name: displayStatus
+          schema:
+            type: string
+        - in: query
+          name: pageNo
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/content/gallery/{id}/status:
+    post:
+      tags: [Admin]
+      summary: Update gallery display status
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [displayStatus]
+              properties:
+                displayStatus:
+                  type: string
+                  enum: [ENABLED, DISABLED, HIDDEN]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/content/gallery/{id}/save:
+    post:
+      tags: [Admin]
+      summary: Save gallery fields
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                coverImageUrl:
+                  type: string
+                tags:
+                  type: string
+                displayStatus:
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/admin/content/upload:
+    post:
+      tags: [Admin]
+      summary: Upload content image file
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    PathId:
+      in: path
+      name: id
+      required: true
+      schema:
+        type: integer
+        format: int64
+
+  schemas:
+    ApiResponse:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: success
+        requestId:
+          type: string
+          example: 4f6a3d1f8b5545bb
+        data:
+          nullable: true
+
+    ApiResponseBoolean:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: boolean
+              example: true
+
+    LoginRequest:
+      type: object
+      required: [loginType]
+      properties:
+        loginType:
+          type: string
+          enum: [GUEST, PHONE]
+        phone:
+          type: string
+        verifyCode:
+          type: string
+        deviceId:
+          type: string
+
+    LoginData:
+      type: object
+      properties:
+        token:
+          type: string
+        tokenType:
+          type: string
+          example: Bearer
+        expiresIn:
+          type: integer
+          example: 7200
+        userNo:
+          type: string
+          example: U202602260001
+        isGuest:
+          type: boolean
+
+    ApiResponseLoginData:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/LoginData'
+
+    MeData:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+        userNo:
+          type: string
+        nickname:
+          type: string
+        avatarUrl:
+          type: string
+        phone:
+          type: string
+          nullable: true
+        loginType:
+          type: string
+          enum: [GUEST, PHONE]
+        status:
+          type: string
+          enum: [ENABLED, DISABLED]
+        isGuest:
+          type: boolean
+
+    ApiResponseMeData:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/MeData'
+
+    SkuCategory:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        parentId:
+          type: integer
+          format: int64
+          nullable: true
+        name:
+          type: string
+        categoryType:
+          type: string
+          enum: [BEAD, SPACER, SHAPE, CHARM, PENDANT]
+        sortNo:
+          type: integer
+        status:
+          type: string
+          enum: [ENABLED, DISABLED]
+
+    ApiResponseSkuCategoryList:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                categories:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/SkuCategory'
+
+    ComponentSku:
+      type: object
+      properties:
+        skuId:
+          type: integer
+          format: int64
+        categoryId:
+          type: integer
+          format: int64
+        name:
+          type: string
+        specText:
+          type: string
+        beadDiameterMm:
+          type: number
+          format: double
+        price:
+          type: number
+          format: double
+        stockQty:
+          type: integer
+        salesStatus:
+          type: string
+          enum: [ON_SALE, OFF_SALE, OUT_OF_STOCK]
+        imageUrl:
+          type: string
+
+    PageMeta:
+      type: object
+      properties:
+        pageNo:
+          type: integer
+        pageSize:
+          type: integer
+        total:
+          type: integer
+          format: int64
+
+    ApiResponseComponentSkuPage:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                list:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ComponentSku'
+                page:
+                  $ref: '#/components/schemas/PageMeta'
+
+    DesignDraftSaveRequest:
+      type: object
+      required: [title, wristSizeCm, configJson, pricePreview]
+      properties:
+        draftId:
+          type: integer
+          format: int64
+          nullable: true
+        title:
+          type: string
+          maxLength: 64
+        wristSizeCm:
+          type: number
+          format: double
+        configJson:
+          type: string
+        previewImageUrl:
+          type: string
+        pricePreview:
+          type: number
+          format: double
+        version:
+          type: integer
+          default: 1
+
+    DesignDraftSaveData:
+      type: object
+      properties:
+        draftId:
+          type: integer
+          format: int64
+        draftNo:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
+
+    ApiResponseDesignDraftSaveData:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/DesignDraftSaveData'
+
+    DesignDraftSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        draftNo:
+          type: string
+        title:
+          type: string
+        wristSizeCm:
+          type: number
+          format: double
+        pricePreview:
+          type: number
+          format: double
+        previewImageUrl:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
+
+    DesignDraftDetail:
+      allOf:
+        - $ref: '#/components/schemas/DesignDraftSummary'
+        - type: object
+          properties:
+            configJson:
+              type: string
+            version:
+              type: integer
+
+    ApiResponseDesignDraftPage:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                list:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/DesignDraftSummary'
+                page:
+                  $ref: '#/components/schemas/PageMeta'
+
+    ApiResponseDesignDraftDetail:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/DesignDraftDetail'
+
+    SnapshotCreateRequest:
+      type: object
+      required: [draftId]
+      properties:
+        draftId:
+          type: integer
+          format: int64
+        forceContinueWhenLengthWarn:
+          type: boolean
+          default: false
+
+    SnapshotCreateData:
+      type: object
+      properties:
+        snapshotNo:
+          type: string
+        previewImageUrl:
+          type: string
+        priceSnapshot:
+          type: number
+          format: double
+
+    ApiResponseSnapshotCreateData:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/SnapshotCreateData'
+
+    SnapshotDetail:
+      type: object
+      properties:
+        snapshotNo:
+          type: string
+        title:
+          type: string
+        wristSizeCm:
+          type: number
+          format: double
+        snapshotJson:
+          type: string
+        previewImageUrl:
+          type: string
+        priceSnapshot:
+          type: number
+          format: double
+
+    ApiResponseSnapshotDetail:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/SnapshotDetail'
+
+    Address:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        receiverName:
+          type: string
+        receiverPhone:
+          type: string
+        province:
+          type: string
+        city:
+          type: string
+        district:
+          type: string
+        detailAddress:
+          type: string
+        isDefault:
+          type: boolean
+
+    AddressSaveRequest:
+      type: object
+      required: [receiverName, receiverPhone, province, city, district, detailAddress]
+      properties:
+        id:
+          type: integer
+          format: int64
+        receiverName:
+          type: string
+          maxLength: 32
+        receiverPhone:
+          type: string
+          maxLength: 20
+        province:
+          type: string
+        city:
+          type: string
+        district:
+          type: string
+        detailAddress:
+          type: string
+          maxLength: 128
+        isDefault:
+          type: boolean
+          default: false
+
+    AddressSaveData:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+
+    ApiResponseAddressList:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                addresses:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Address'
+
+    ApiResponseAddressSaveData:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/AddressSaveData'
+
+    OrderCreateRequest:
+      type: object
+      required: [snapshotNo, addressId]
+      properties:
+        snapshotNo:
+          type: string
+        addressId:
+          type: integer
+          format: int64
+        remark:
+          type: string
+          maxLength: 45
+
+    OrderCreateFromCartRequest:
+      type: object
+      required: [addressId]
+      properties:
+        addressId:
+          type: integer
+          format: int64
+        remark:
+          type: string
+          maxLength: 45
+        cartItemIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+
+    OrderCreateDirectGoodsRequest:
+      type: object
+      required: [skuId, addressId]
+      properties:
+        skuId:
+          type: integer
+          format: int64
+        qty:
+          type: integer
+          minimum: 1
+          default: 1
+        addressId:
+          type: integer
+          format: int64
+        remark:
+          type: string
+          maxLength: 45
+
+    OrderActionRequest:
+      type: object
+      properties:
+        remark:
+          type: string
+          maxLength: 128
+
+    OrderShipRequest:
+      type: object
+      required: [carrierCode, trackingNo]
+      properties:
+        carrierCode:
+          type: string
+        trackingNo:
+          type: string
+        remark:
+          type: string
+          maxLength: 128
+
+    OrderCreateData:
+      type: object
+      properties:
+        orderNo:
+          type: string
+        orderStatus:
+          $ref: '#/components/schemas/OrderStatus'
+        payAmount:
+          type: number
+          format: double
+        preoccupyStatus:
+          type: string
+          enum: [LOCKED, FAILED]
+
+    ApiResponseOrderCreateData:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/OrderCreateData'
+
+    OrderActionData:
+      type: object
+      properties:
+        orderNo:
+          type: string
+        orderStatus:
+          $ref: '#/components/schemas/OrderStatus'
+
+    OrderShipData:
+      type: object
+      properties:
+        orderNo:
+          type: string
+        orderStatus:
+          $ref: '#/components/schemas/OrderStatus'
+        carrierCode:
+          type: string
+        trackingNo:
+          type: string
+
+    ApiResponseOrderActionData:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/OrderActionData'
+
+    ApiResponseOrderShipData:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/OrderShipData'
+
+    OrderStatus:
+      type: string
+      enum:
+        - PENDING_PAY
+        - PAID_WAIT_SHIP
+        - SHIPPED_WAIT_RECEIVE
+        - COMPLETED
+        - CANCELLED
+        - AFTER_SALE
+
+    OrderItem:
+      type: object
+      properties:
+        itemType:
+          type: string
+          enum: [DIY_SNAPSHOT, NORMAL_GOODS]
+        title:
+          type: string
+        imageUrl:
+          type: string
+        unitPrice:
+          type: number
+          format: double
+        qty:
+          type: integer
+        amount:
+          type: number
+          format: double
+        snapshotNo:
+          type: string
+          nullable: true
+        skuId:
+          type: integer
+          format: int64
+          nullable: true
+
+    OrderSummary:
+      type: object
+      properties:
+        orderNo:
+          type: string
+        orderStatus:
+          $ref: '#/components/schemas/OrderStatus'
+        payAmount:
+          type: number
+          format: double
+        createdAt:
+          type: string
+          format: date-time
+        itemPreview:
+          type: object
+          properties:
+            title:
+              type: string
+            imageUrl:
+              type: string
+
+    OrderDetail:
+      type: object
+      properties:
+        orderNo:
+          type: string
+        orderStatus:
+          $ref: '#/components/schemas/OrderStatus'
+        payStatus:
+          type: string
+          enum: [UNPAID, PAID, REFUNDING, REFUNDED]
+        totalAmount:
+          type: number
+          format: double
+        payAmount:
+          type: number
+          format: double
+        remark:
+          type: string
+        addressSnapshot:
+          $ref: '#/components/schemas/Address'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        shipping:
+          $ref: '#/components/schemas/OrderShipping'
+        logs:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderLog'
+        createdAt:
+          type: string
+          format: date-time
+        paidAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    OrderShipping:
+      type: object
+      properties:
+        carrierCode:
+          type: string
+        trackingNo:
+          type: string
+        remark:
+          type: string
+        shippedAt:
+          type: string
+          format: date-time
+
+    OrderLog:
+      type: object
+      properties:
+        action:
+          type: string
+        fromStatus:
+          type: string
+          nullable: true
+        toStatus:
+          type: string
+          nullable: true
+        remark:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    ApiResponseOrderPage:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                list:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/OrderSummary'
+                page:
+                  $ref: '#/components/schemas/PageMeta'
+
+    ApiResponseOrderDetail:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/OrderDetail'
+
+    MockPayRequest:
+      type: object
+      required: [orderNo]
+      properties:
+        orderNo:
+          type: string
+        payAmount:
+          type: number
+          format: double
+
+    MockPayData:
+      type: object
+      properties:
+        payNo:
+          type: string
+        payStatus:
+          type: string
+          enum: [PROCESSING, SUCCESS, FAILED]
+
+    ApiResponseMockPayData:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/MockPayData'
+
+    MockPayCallbackRequest:
+      type: object
+      required: [payNo, orderNo, payStatus]
+      properties:
+        payNo:
+          type: string
+        orderNo:
+          type: string
+        payStatus:
+          type: string
+          enum: [SUCCESS, FAILED, CANCELLED]
+        channelTradeNo:
+          type: string
+        callbackAt:
+          type: string
+          format: date-time
+
+    BannerItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        imageUrl:
+          type: string
+        jumpType:
+          type: string
+          enum: [NONE, URL, PAGE]
+        jumpValue:
+          type: string
+        sortNo:
+          type: integer
+
+    ApiResponseBannerList:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                list:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/BannerItem'
+
+    GalleryItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        snapshotId:
+          type: integer
+          format: int64
+        userId:
+          type: integer
+          format: int64
+        title:
+          type: string
+        coverImageUrl:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        authorNickname:
+          type: string
+        displayStatus:
+          type: string
+        publishedAt:
+          type: string
+          format: date-time
+
+    ApiResponseGalleryPage:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                list:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/GalleryItem'
+                page:
+                  $ref: '#/components/schemas/PageMeta'
+
+    ApiResponseGalleryDetail:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/GalleryItem'
+
+    LogisticsTrackNode:
+      type: object
+      properties:
+        time:
+          type: string
+          format: date-time
+        status:
+          type: string
+        location:
+          type: string
+        description:
+          type: string
+
+    LogisticsTrackData:
+      type: object
+      properties:
+        carrierCode:
+          type: string
+        trackingNo:
+          type: string
+        latestStatus:
+          type: string
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/LogisticsTrackNode'
+
+    ApiResponseLogisticsTrack:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/LogisticsTrackData'
+
+    GoodsCategory:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        parentId:
+          type: integer
+          format: int64
+          nullable: true
+        name:
+          type: string
+        iconUrl:
+          type: string
+        sortNo:
+          type: integer
+        status:
+          type: string
+          enum: [ENABLED, DISABLED]
+        goodsCount:
+          type: integer
+
+    ApiResponseGoodsCategoryList:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                categories:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/GoodsCategory'
+
+    GoodsSpu:
+      type: object
+      properties:
+        spuId:
+          type: integer
+          format: int64
+        categoryId:
+          type: integer
+          format: int64
+        title:
+          type: string
+        subtitle:
+          type: string
+        coverImageUrl:
+          type: string
+        minPrice:
+          type: number
+          format: double
+        maxPrice:
+          type: number
+          format: double
+        salesStatus:
+          type: string
+          enum: [ON_SALE, OFF_SALE, SOLD_OUT]
+        stockStatus:
+          type: string
+          enum: [HAS_STOCK, LOW_STOCK, OUT_OF_STOCK]
+        tags:
+          type: array
+          items:
+            type: string
+
+    GoodsSku:
+      type: object
+      properties:
+        skuId:
+          type: integer
+          format: int64
+        spuId:
+          type: integer
+          format: int64
+        specText:
+          type: string
+        skuImageUrl:
+          type: string
+        price:
+          type: number
+          format: double
+        originPrice:
+          type: number
+          format: double
+        stockQty:
+          type: integer
+        salesStatus:
+          type: string
+          enum: [ON_SALE, OFF_SALE]
+
+    ApiResponseGoodsSpuPage:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                list:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/GoodsSpu'
+                page:
+                  $ref: '#/components/schemas/PageMeta'
+
+    GoodsDetail:
+      type: object
+      properties:
+        spu:
+          $ref: '#/components/schemas/GoodsSpu'
+        skus:
+          type: array
+          items:
+            $ref: '#/components/schemas/GoodsSku'
+        detailHtml:
+          type: string
+
+    ApiResponseGoodsDetail:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/GoodsDetail'
+
+    CartItemValidityStatus:
+      type: string
+      enum:
+        - VALID
+        - INVALID_OFF_SALE
+        - INVALID_OUT_OF_STOCK
+        - INVALID_PRICE_CHANGED
+        - INVALID_NOT_FOUND
+
+    CartItem:
+      type: object
+      properties:
+        cartItemId:
+          type: integer
+          format: int64
+        itemType:
+          type: string
+          enum: [NORMAL_GOODS, DIY_SNAPSHOT]
+        bizNo:
+          type: string
+        spuId:
+          type: integer
+          format: int64
+          nullable: true
+        skuId:
+          type: integer
+          format: int64
+          nullable: true
+        snapshotNo:
+          type: string
+          nullable: true
+        title:
+          type: string
+        imageUrl:
+          type: string
+        unitPrice:
+          type: number
+          format: double
+        qty:
+          type: integer
+        selected:
+          type: boolean
+        validityStatus:
+          $ref: '#/components/schemas/CartItemValidityStatus'
+        invalidReason:
+          type: string
+          nullable: true
+        amount:
+          type: number
+          format: double
+
+    CartCheckoutStatus:
+      type: string
+      enum:
+        - READY
+        - BLOCKED_EMPTY
+        - BLOCKED_NO_SELECTION
+        - BLOCKED_INVALID_ITEMS
+        - BLOCKED_NO_ADDRESS
+        - BLOCKED_STOCK_CHANGED
+
+    CartSummary:
+      type: object
+      properties:
+        itemCount:
+          type: integer
+        selectedCount:
+          type: integer
+        invalidCount:
+          type: integer
+        totalAmount:
+          type: number
+          format: double
+        selectedAmount:
+          type: number
+          format: double
+        discountAmount:
+          type: number
+          format: double
+        payAmount:
+          type: number
+          format: double
+        checkoutStatus:
+          $ref: '#/components/schemas/CartCheckoutStatus'
+        checkoutBlockReason:
+          type: string
+          nullable: true
+
+    CartData:
+      type: object
+      properties:
+        pageState:
+          type: string
+          enum: [EMPTY, HAS_VALID, HAS_INVALID, MIXED]
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItem'
+        summary:
+          $ref: '#/components/schemas/CartSummary'
+
+    ApiResponseCartData:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/CartData'
+
+    ApiResponseCartSummary:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                summary:
+                  $ref: '#/components/schemas/CartSummary'
+
+    CartAddRequest:
+      type: object
+      required: [itemType, qty]
+      properties:
+        itemType:
+          type: string
+          enum: [NORMAL_GOODS, DIY_SNAPSHOT]
+        skuId:
+          type: integer
+          format: int64
+          nullable: true
+        snapshotNo:
+          type: string
+          nullable: true
+        qty:
+          type: integer
+          minimum: 1
+          maximum: 999
+
+    CartUpdateQtyRequest:
+      type: object
+      required: [qty]
+      properties:
+        qty:
+          type: integer
+          minimum: 1
+          maximum: 999
+
+    CartSelectRequest:
+      type: object
+      required: [selected]
+      properties:
+        selected:
+          type: boolean
+
+    CartSelectAllRequest:
+      type: object
+      required: [selected]
+      properties:
+        selected:
+          type: boolean
+
+    SettlementPriceLine:
+      type: object
+      properties:
+        title:
+          type: string
+        amount:
+          type: number
+          format: double
+
+    SettlementPreviewRequest:
+      type: object
+      properties:
+        addressId:
+          type: integer
+          format: int64
+        cartItemIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+
+    SettlementPreviewData:
+      type: object
+      properties:
+        summary:
+          $ref: '#/components/schemas/CartSummary'
+        priceLines:
+          type: array
+          items:
+            $ref: '#/components/schemas/SettlementPriceLine'
+        canSubmit:
+          type: boolean
+        blockingReasons:
+          type: array
+          items:
+            type: string
+
+    ApiResponseSettlementPreviewData:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/SettlementPreviewData'

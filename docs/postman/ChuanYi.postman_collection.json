@@ -1,0 +1,760 @@
+﻿{
+    "info":  {
+                 "_postman_id":  "2a224bf8-c80e-4f0f-8f81-044cf2a4a8ec",
+                 "name":  "ChuanYi API",
+                 "schema":  "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+                 "description":  "End-to-end API collection for ChuanYi backend."
+             },
+    "item":  [
+                 {
+                     "name":  "Auth",
+                     "item":  [
+                                  {
+                                      "name":  "Login PHONE (seed user)",
+                                      "event":  [
+                                                    {
+                                                        "listen":  "test",
+                                                        "script":  {
+                                                                       "type":  "text/javascript",
+                                                                       "exec":  [
+                                                                                    "const res = pm.response.json();",
+                                                                                    "pm.test(\u0027login success\u0027, function () {",
+                                                                                    "  pm.expect(res.code).to.eql(0);",
+                                                                                    "});",
+                                                                                    "if (res.data \u0026\u0026 res.data.token) {",
+                                                                                    "  pm.collectionVariables.set(\u0027token\u0027, res.data.token);",
+                                                                                    "}",
+                                                                                    "if (res.data \u0026\u0026 res.data.userNo) {",
+                                                                                    "  pm.collectionVariables.set(\u0027userNo\u0027, res.data.userNo);",
+                                                                                    "}"
+                                                                                ]
+                                                                   }
+                                                    }
+                                                ],
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"loginType\": \"PHONE\",\n  \"phone\": \"{{phone}}\",\n  \"deviceId\": \"{{deviceId}}\"\n}"
+                                                               },
+                                                      "url":  "{{baseUrl}}/api/auth/login"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Me",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{baseUrl}}/api/auth/me"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Logout",
+                                      "event":  [
+                                                    {
+                                                        "listen":  "test",
+                                                        "script":  {
+                                                                       "type":  "text/javascript",
+                                                                       "exec":  [
+                                                                                    "pm.collectionVariables.unset(\u0027token\u0027);"
+                                                                                ]
+                                                                   }
+                                                    }
+                                                ],
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{baseUrl}}/api/auth/logout"
+                                                  }
+                                  }
+                              ]
+                 },
+                 {
+                     "name":  "DIY Order Flow",
+                     "item":  [
+                                  {
+                                      "name":  "Create Snapshot From Draft",
+                                      "event":  [
+                                                    {
+                                                        "listen":  "test",
+                                                        "script":  {
+                                                                       "type":  "text/javascript",
+                                                                       "exec":  [
+                                                                                    "const res = pm.response.json();",
+                                                                                    "pm.test(\u0027snapshot created\u0027, function () {",
+                                                                                    "  pm.expect(res.code).to.eql(0);",
+                                                                                    "});",
+                                                                                    "if (res.data \u0026\u0026 res.data.snapshotNo) {",
+                                                                                    "  pm.collectionVariables.set(\u0027snapshotNo\u0027, res.data.snapshotNo);",
+                                                                                    "}"
+                                                                                ]
+                                                                   }
+                                                    }
+                                                ],
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{token}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"draftId\": {{draftId}}\n}"
+                                                               },
+                                                      "url":  "{{baseUrl}}/api/design/snapshot/create-from-draft"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Add Snapshot To Cart",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{token}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"itemType\": \"DIY_SNAPSHOT\",\n  \"snapshotNo\": \"{{snapshotNo}}\"\n}"
+                                                               },
+                                                      "url":  "{{baseUrl}}/api/cart/items"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Cart Detail",
+                                      "event":  [
+                                                    {
+                                                        "listen":  "test",
+                                                        "script":  {
+                                                                       "type":  "text/javascript",
+                                                                       "exec":  [
+                                                                                    "const res = pm.response.json();",
+                                                                                    "if (res.data \u0026\u0026 res.data.items \u0026\u0026 res.data.items.length \u003e 0) {",
+                                                                                    "  pm.collectionVariables.set(\u0027cartItemId\u0027, String(res.data.items[0].cartItemId));",
+                                                                                    "}"
+                                                                                ]
+                                                                   }
+                                                    }
+                                                ],
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{baseUrl}}/api/cart"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Create Order From Cart",
+                                      "event":  [
+                                                    {
+                                                        "listen":  "test",
+                                                        "script":  {
+                                                                       "type":  "text/javascript",
+                                                                       "exec":  [
+                                                                                    "const res = pm.response.json();",
+                                                                                    "pm.test(\u0027order created\u0027, function () {",
+                                                                                    "  pm.expect(res.code).to.eql(0);",
+                                                                                    "});",
+                                                                                    "if (res.data \u0026\u0026 res.data.orderNo) {",
+                                                                                    "  pm.collectionVariables.set(\u0027orderNo\u0027, res.data.orderNo);",
+                                                                                    "}"
+                                                                                ]
+                                                                   }
+                                                    }
+                                                ],
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{token}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"addressId\": {{addressId}},\n  \"remark\": \"postman e2e\"\n}"
+                                                               },
+                                                      "url":  "{{baseUrl}}/api/order/create-from-cart"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Mock Pay",
+                                      "event":  [
+                                                    {
+                                                        "listen":  "test",
+                                                        "script":  {
+                                                                       "type":  "text/javascript",
+                                                                       "exec":  [
+                                                                                    "const res = pm.response.json();",
+                                                                                    "if (res.data \u0026\u0026 res.data.payNo) {",
+                                                                                    "  pm.collectionVariables.set(\u0027payNo\u0027, res.data.payNo);",
+                                                                                    "}"
+                                                                                ]
+                                                                   }
+                                                    }
+                                                ],
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{token}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"orderNo\": \"{{orderNo}}\"\n}"
+                                                               },
+                                                      "url":  "{{baseUrl}}/api/payment/mock/pay"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Mock Pay Callback SUCCESS",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"payNo\": \"{{payNo}}\",\n  \"orderNo\": \"{{orderNo}}\",\n  \"payStatus\": \"SUCCESS\"\n}"
+                                                               },
+                                                      "url":  "{{baseUrl}}/api/payment/mock/callback"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Ship Order",
+                                      "event":  [
+                                                    {
+                                                        "listen":  "prerequest",
+                                                        "script":  {
+                                                                       "type":  "text/javascript",
+                                                                       "exec":  [
+                                                                                    "pm.collectionVariables.set(\u0027trackingNo\u0027, \u0027SF\u0027 + Date.now());"
+                                                                                ]
+                                                                   }
+                                                    }
+                                                ],
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{token}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"carrierCode\": \"{{carrierCode}}\",\n  \"trackingNo\": \"{{trackingNo}}\",\n  \"remark\": \"postman ship\"\n}"
+                                                               },
+                                                      "url":  "{{baseUrl}}/api/order/{{orderNo}}/ship"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Logistics Track By TrackingNo",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{baseUrl}}/api/logistics/track?carrierCode={{carrierCode}}\u0026trackingNo={{trackingNo}}"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Confirm Receipt",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{token}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"remark\": \"received\"\n}"
+                                                               },
+                                                      "url":  "{{baseUrl}}/api/order/{{orderNo}}/confirm-receipt"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Order Detail",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{baseUrl}}/api/order/{{orderNo}}"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Logistics Track By OrderNo",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{baseUrl}}/api/logistics/track?carrierCode={{carrierCode}}\u0026trackingNo={{orderNo}}"
+                                                  }
+                                  }
+                              ]
+                 },
+                 {
+                     "name":  "Goods Cart Flow",
+                     "item":  [
+                                  {
+                                      "name":  "Goods Categories",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{baseUrl}}/api/goods/categories?withCount=true"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Goods List",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{baseUrl}}/api/goods/list?pageNo=1\u0026pageSize=20"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Goods Detail",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{token}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{baseUrl}}/api/goods/{{spuId}}"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Add Goods SKU To Cart",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{token}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"itemType\": \"NORMAL_GOODS\",\n  \"skuId\": {{skuId}},\n  \"qty\": 1\n}"
+                                                               },
+                                                      "url":  "{{baseUrl}}/api/cart/items"
+                                                  }
+                                  }
+                              ]
+                 },
+                 {
+                     "name":  "Admin Console",
+                     "item":  [
+                                  {
+                                      "name":  "Admin Login",
+                                      "event":  [
+                                                    {
+                                                        "listen":  "test",
+                                                        "script":  {
+                                                                       "type":  "text/javascript",
+                                                                       "exec":  [
+                                                                                    "const res = pm.response.json();",
+                                                                                    "pm.test(\u0027admin login success\u0027, function () { pm.expect(res.code).to.eql(0); });",
+                                                                                    "if (res.data \u0026\u0026 res.data.token) { pm.collectionVariables.set(\u0027adminToken\u0027, res.data.token); }"
+                                                                                ]
+                                                                   }
+                                                    }
+                                                ],
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+                                                               },
+                                                      "url":  "{{baseUrl}}/api/admin/auth/login"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Admin Goods List",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{adminToken}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{baseUrl}}/api/admin/goods/list?pageNo=1\u0026pageSize=20"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Admin Goods Detail",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{adminToken}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{baseUrl}}/api/admin/goods/{{spuId}}"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Admin Goods Save",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{adminToken}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"title\": \"???????\",\n  \"subtitle\": \"????????\",\n  \"tags\": \"daily,new\"\n}"
+                                                               },
+                                                      "url":  "{{baseUrl}}/api/admin/goods/{{spuId}}/save"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Admin Goods Status OFF_SALE",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{adminToken}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"salesStatus\": \"OFF_SALE\"\n}"
+                                                               },
+                                                      "url":  "{{baseUrl}}/api/admin/goods/{{spuId}}/status"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Admin SKU Create",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{adminToken}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"specText\": \"????\",\n  \"price\": 19.9,\n  \"stockQty\": 50,\n  \"salesStatus\": \"ON_SALE\"\n}"
+                                                               },
+                                                      "url":  "{{baseUrl}}/api/admin/goods/{{spuId}}/sku/create"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Admin SKU Save",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{adminToken}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"specText\": \"????\",\n  \"price\": 29.9,\n  \"stockQty\": 20\n}"
+                                                               },
+                                                      "url":  "{{baseUrl}}/api/admin/goods/sku/{{adminSkuId}}/save"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Admin SKU Status ON_SALE",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{adminToken}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"salesStatus\": \"ON_SALE\"\n}"
+                                                               },
+                                                      "url":  "{{baseUrl}}/api/admin/goods/sku/{{adminSkuId}}/status"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Admin SKU Delete",
+                                      "request":  {
+                                                      "method":  "DELETE",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{adminToken}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{baseUrl}}/api/admin/goods/sku/{{adminSkuId}}"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Admin Banner List",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{adminToken}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{baseUrl}}/api/admin/content/banners?pageNo=1\u0026pageSize=20"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Admin Banner Save",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{adminToken}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"id\": {{bannerId}},\n  \"title\": \"??????\",\n  \"jumpType\": \"NONE\",\n  \"jumpValue\": \"\",\n  \"sortNo\": 1,\n  \"status\": \"ENABLED\"\n}"
+                                                               },
+                                                      "url":  "{{baseUrl}}/api/admin/content/banners/save"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Admin Gallery List",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{adminToken}}"
+                                                                     }
+                                                                 ],
+                                                      "url":  "{{baseUrl}}/api/admin/content/gallery?pageNo=1\u0026pageSize=20"
+                                                  }
+                                  },
+                                  {
+                                      "name":  "Admin Gallery Save",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Authorization",
+                                                                         "value":  "Bearer {{adminToken}}"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"title\": \"??????\",\n  \"tags\": \"quartz,minimal\",\n  \"displayStatus\": \"ENABLED\"\n}"
+                                                               },
+                                                      "url":  "{{baseUrl}}/api/admin/content/gallery/{{galleryId}}/save"
+                                                  }
+                                  }
+                              ]
+                 }
+             ],
+    "variable":  [
+                     {
+                         "key":  "baseUrl",
+                         "value":  "http://127.0.0.1:8080"
+                     },
+                     {
+                         "key":  "token",
+                         "value":  ""
+                     },
+                     {
+                         "key":  "userNo",
+                         "value":  ""
+                     },
+                     {
+                         "key":  "phone",
+                         "value":  "15700000000"
+                     },
+                     {
+                         "key":  "deviceId",
+                         "value":  "postman-dev-1"
+                     },
+                     {
+                         "key":  "draftId",
+                         "value":  "1"
+                     },
+                     {
+                         "key":  "addressId",
+                         "value":  "1"
+                     },
+                     {
+                         "key":  "snapshotNo",
+                         "value":  ""
+                     },
+                     {
+                         "key":  "cartItemId",
+                         "value":  ""
+                     },
+                     {
+                         "key":  "orderNo",
+                         "value":  ""
+                     },
+                     {
+                         "key":  "payNo",
+                         "value":  ""
+                     },
+                     {
+                         "key":  "carrierCode",
+                         "value":  "SF"
+                     },
+                     {
+                         "key":  "trackingNo",
+                         "value":  ""
+                     },
+                     {
+                         "key":  "spuId",
+                         "value":  "20001"
+                     },
+                     {
+                         "key":  "skuId",
+                         "value":  "30001"
+                     },
+                     {
+                         "key":  "adminToken",
+                         "value":  ""
+                     },
+                     {
+                         "key":  "adminUsername",
+                         "value":  "admin"
+                     },
+                     {
+                         "key":  "adminPassword",
+                         "value":  "123456"
+                     },
+                     {
+                         "key":  "bannerId",
+                         "value":  "1"
+                     },
+                     {
+                         "key":  "galleryId",
+                         "value":  "1"
+                     },
+                     {
+                         "key":  "adminSkuId",
+                         "value":  "30001"
+                     }
+                 ]
+}

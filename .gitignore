@@ -1,0 +1,29 @@
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Java
+backend/target/
+*.log
+
+# Node
+**/node_modules/
+**/dist/
+**/.vite/
+**/.cache/
+
+# Env
+*.env
+*.env.*
+
+# Temporary
+tmp/
+temp/
+
+# Runtime uploads
+uploads/
