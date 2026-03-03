@@ -1,0 +1,171 @@
+﻿{
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationStyle": "custom",
+        "backgroundColor": "#f4f5f7"
+      }
+    },
+    {
+      "path": "pages/home/index",
+      "style": {
+        "navigationBarTitleText": "首页",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/goods/index",
+      "style": {
+        "navigationBarTitleText": "好物",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/diy/index",
+      "style": {
+        "navigationBarTitleText": "定制"
+      }
+    },
+    {
+      "path": "pages/cart/index",
+      "style": {
+        "navigationBarTitleText": "购物车",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/profile/index",
+      "style": {
+        "navigationBarTitleText": "个人中心"
+      }
+    },
+    {
+      "path": "pages-diy/editor",
+      "style": {
+        "navigationBarTitleText": "手串设计"
+      }
+    },
+    {
+      "path": "pages-diy/designs",
+      "style": {
+        "navigationBarTitleText": "我的设计",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages-diy/snapshot-detail",
+      "style": {
+        "navigationBarTitleText": "定制商品详情"
+      }
+    },
+    {
+      "path": "pages-goods/detail",
+      "style": {
+        "navigationBarTitleText": "商品详情"
+      }
+    },
+    {
+      "path": "pages-order/list",
+      "style": {
+        "navigationBarTitleText": "我的订单",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages-order/submit",
+      "style": {
+        "navigationBarTitleText": "提交订单"
+      }
+    },
+    {
+      "path": "pages-order/detail",
+      "style": {
+        "navigationBarTitleText": "订单详情",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages-user/address-list",
+      "style": {
+        "navigationBarTitleText": "收货地址",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages-user/address-edit",
+      "style": {
+        "navigationBarTitleText": "编辑地址"
+      }
+    },
+    {
+      "path": "pages-user/help",
+      "style": {
+        "navigationBarTitleText": "帮助中心"
+      }
+    },
+    {
+      "path": "pages-user/terms",
+      "style": {
+        "navigationBarTitleText": "条款和条件"
+      }
+    },
+    {
+      "path": "pages-gallery/detail",
+      "style": {
+        "navigationBarTitleText": "设计广场详情"
+      }
+    },
+    {
+      "path": "pages-gallery/list",
+      "style": {
+        "navigationBarTitleText": "设计广场",
+        "enablePullDownRefresh": true
+      }
+    }
+  ],
+  "tabBar": {
+    "color": "#8a8f99",
+    "selectedColor": "#d62b2b",
+    "borderStyle": "black",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页",
+        "iconPath": "static/logo.png",
+        "selectedIconPath": "static/logo.png"
+      },
+      {
+        "pagePath": "pages/goods/index",
+        "text": "好物",
+        "iconPath": "static/logo.png",
+        "selectedIconPath": "static/logo.png"
+      },
+      {
+        "pagePath": "pages/diy/index",
+        "text": "定制",
+        "iconPath": "static/logo.png",
+        "selectedIconPath": "static/logo.png"
+      },
+      {
+        "pagePath": "pages/cart/index",
+        "text": "购物车",
+        "iconPath": "static/logo.png",
+        "selectedIconPath": "static/logo.png"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的",
+        "iconPath": "static/logo.png",
+        "selectedIconPath": "static/logo.png"
+      }
+    ]
+  },
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "养个石头",
+    "navigationBarBackgroundColor": "#ffffff",
+    "backgroundColor": "#f4f5f7"
+  }
+}

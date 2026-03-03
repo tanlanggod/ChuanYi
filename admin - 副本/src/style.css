@@ -1,0 +1,132 @@
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  color: #333639;
+  background: #f0f2f5;
+
+  /* Element Plus Theme Overrides */
+  --el-color-primary: #3a7bd5;
+  --el-color-primary-light-3: #75a4e5;
+  --el-color-primary-light-5: #9cbeee;
+  --el-color-primary-light-7: #c3d9f6;
+  --el-color-primary-light-9: #ebf2fc;
+  --el-color-primary-dark-2: #2e62aa;
+  
+  --el-border-radius-base: 8px;
+  --el-border-radius-small: 6px;
+  --el-border-radius-round: 20px;
+  
+  --el-box-shadow-light: 0 4px 16px rgba(0, 0, 0, 0.04);
+  --el-box-shadow-base: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+  --el-border-color-light: #ebeef5;
+  --el-border-color-lighter: #f2f6fc;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Global Beautification for Element Plus Components */
+
+/* Cards */
+.el-card {
+  border: none !important;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.04) !important;
+  border-radius: 12px !important;
+  transition: all 0.3s ease-in-out;
+}
+.el-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
+}
+.el-card__header {
+  border-bottom: 1px solid var(--el-border-color-lighter) !important;
+  padding: 16px 20px !important;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* Buttons */
+.el-button {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
+.el-button:active {
+  transform: scale(0.96);
+}
+
+/* Tables */
+.el-table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+.el-table th.el-table__cell {
+  background-color: #fafafa !important;
+  color: #333639 !important;
+  font-weight: 600 !important;
+  border-bottom: 1px solid #ebeef5 !important;
+}
+.el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell {
+  background-color: #f5f7fa !important;
+}
+
+/* Inputs & Selects */
+.el-input__wrapper,
+.el-select .el-input__wrapper {
+  box-shadow: 0 0 0 1px var(--el-border-color-light) inset !important;
+  border-radius: 8px !important;
+  transition: all 0.3s !important;
+}
+.el-input__wrapper:hover,
+.el-select .el-input__wrapper:hover {
+  box-shadow: 0 0 0 1px var(--el-color-primary-light-5) inset !important;
+}
+.el-input__wrapper.is-focus,
+.el-select .el-input__wrapper.is-focus {
+  box-shadow: 0 0 0 1px var(--el-color-primary) inset !important;
+}
+
+/* Tags */
+.el-tag {
+  border-radius: 6px !important;
+  border: none !important;
+  font-weight: 500;
+}
+
+/* Pagination */
+.el-pagination {
+  margin-top: 20px;
+  justify-content: flex-end;
+  padding: 10px 0;
+}
+
+/* Utility Classes for Views */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.w220 { width: 220px; }
+.w180 { width: 180px; }
+.mt16 { margin-top: 16px; }
+.mb16 { margin-bottom: 16px; }
+
+.page-container { min-height: calc(100vh - 108px); }
+.page-title { display: flex; align-items: center; gap: 8px; font-size: 18px; font-weight: 600; color: #1f2937; }
+.page-title .el-icon { color: var(--el-color-primary); font-size: 22px; }
