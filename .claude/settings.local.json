@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm:*)",
+      "Bash(git:*)",
+      "Bash(node:*)",
+      "mcp__replicate__search_models",
+      "mcp__replicate__list_collections",
+      "mcp__replicate__create_models_predictions",
+      "mcp__replicate__get_models"
+    ]
+  }
+}
