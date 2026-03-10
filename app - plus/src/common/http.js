@@ -1,5 +1,5 @@
 ﻿const API_BASE_URL = "/api";
-const H5_ASSET_BASE_URL = (import.meta.env.VITE_ASSET_BASE_URL || "http://127.0.0.1:8080").replace(/\/$/, "");
+const H5_ASSET_BASE_URL = String(import.meta.env.VITE_ASSET_BASE_URL || "").replace(/\/$/, "");
 
 function isAbsoluteUrl(url) {
   return /^https?:\/\//i.test(url) || /^data:/i.test(url);

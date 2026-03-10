@@ -60,11 +60,3 @@ public class CartController {
         return ApiResponse.ok(cartService.settlementPreview(body));
     }
 }
-        {
-              tools":{
-                "profile':"full",
-                "sessions":{
-                     "visibility":"all"
-                 }
-             }
-        }
