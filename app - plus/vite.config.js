@@ -2,6 +2,7 @@
 import uni from '@dcloudio/vite-plugin-uni'
 
 export default defineConfig({
+  base: '/app/',
   plugins: [uni()],
   server: {
     host: '0.0.0.0',
