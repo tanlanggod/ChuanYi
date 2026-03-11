@@ -1,0 +1,67 @@
+name: chuanyi
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: chuanyi-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: chuanyi
+      MYSQL_USER: chuanyi
+      MYSQL_PASSWORD: Chuanyi@2026!
+      MYSQL_ROOT_PASSWORD: Root@2026!
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-pRoot@2026!"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: chuanyi-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: chuanyi-backend
+    restart: unless-stopped
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/chuanyi?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+      DB_USERNAME: chuanyi
+      DB_PASSWORD: Chuanyi@2026!
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      UPLOAD_DIR: /app/uploads
+    volumes:
+      - backend_uploads:/app/uploads
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: chuanyi-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - "./admin - plus/dist:/usr/share/nginx/html/admin:ro"
+      - "./app - plus/dist/build/h5:/usr/share/nginx/html/app:ro"
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:
+  redis_data:
+  backend_uploads:
