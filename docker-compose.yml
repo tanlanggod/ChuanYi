@@ -33,6 +33,8 @@ services:
       dockerfile: Dockerfile
     container_name: chuanyi-backend
     restart: unless-stopped
+    ports:
+      - "8080:8080"
     environment:
       DB_URL: jdbc:mysql://mysql:3306/chuanyi?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
       DB_USERNAME: chuanyi
